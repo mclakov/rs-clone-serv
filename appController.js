@@ -1,8 +1,13 @@
 const User = require("./models/User");
+const {validationResult} = require("express-validator")
 
 class appController {
     async reg(req, res) {
         try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({message: "User validation error!", errors});
+            }
             const {username, password, workspaces} = req.body;
             const candidate = await User.findOne({username});
             if (candidate) {
