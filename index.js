@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3008
 const app = express();
 
 app.use(express.json());
-app.use("/app/", appRouter);
+app.use("/api/", appRouter);
 
 const start = async () => {
   try {
