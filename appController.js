@@ -12,7 +12,7 @@ class appController {
     }
 
     async getUsers(req, res) {
-
+        res.json("server work, getUsers()")
     }
 }
 
