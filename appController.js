@@ -2,7 +2,7 @@ const User = require("./models/User");
 const {validationResult} = require("express-validator")
 
 class appController {
-    async reg(req, res) {
+    async registration(req, res) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -43,7 +43,6 @@ class appController {
     async getUserData(req, res) {
         try {
             const {id} = req.body;
-            console.log("id = ", id);
             const user = await User.findById(id);
             if (!user) {
                 return res.status(400).json({message: `User's data not found!`});
@@ -57,7 +56,14 @@ class appController {
 
     async setUserData(req, res) {
         try {
-
+            const {id, newUserData} = req.body;
+            const user = await User.findById(id);
+            if (!user) {
+                return res.status(400).json({message: `User ${user} not found!`});
+            }
+            user.workspaces = newUserData;
+            await user.save();
+            return res.json({message: "User's data update!"})
         } catch (e) {
             console.log(e);
             res.status(400).json({message: "Server error!"});
