@@ -1,10 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const appRouter = require("./appRouter");
 const PORT = process.env.PORT || 3008
 
+const app = express();
 
-const app = express()
-
+app.use(express.json());
+app.use("/app", appRouter);
 
 const start = async () => {
   try {
@@ -13,6 +15,6 @@ const start = async () => {
   } catch (e) {
       console.log(e)
   }
-}
+};
 
 start();
