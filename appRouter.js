@@ -8,6 +8,7 @@ router.post("/reg", [
     check("password", "Your password must be at least 4 characters long!").isLength({min: 4})
 ], controller.reg);
 router.post("/login", controller.login);
-router.get("/users", controller.getUsers);
+router.get("/user", controller.getUserData);
+router.put("/user", controller.setUserData);
 
 module.exports = router;
