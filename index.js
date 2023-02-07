@@ -1,10 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const appRouter = require("./appRouter");
+const cors = require("cors");
 const PORT = process.env.PORT || 3008
 
 const app = express();
 
+
+app.use(cors());
 app.use(express.json());
 app.use("/api/", appRouter);
 

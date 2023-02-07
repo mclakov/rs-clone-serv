@@ -15,6 +15,7 @@ class appController {
             }
             const user = new User({username, password: password, workspaces: workspaces});
             await user.save();
+            console.log("User registration completed!");
             return res.json({message: "User registration completed!"})
         } catch (e) {
             console.log(e);
