@@ -1,6 +1,6 @@
 # RS CLONE-api(clone Trello)
 
-Api for Rolling Scopes School task "RS CLONE".
+Api for Rolling Scopes School task "RS CLONE Trello".
 
 ## Setup and Running
 
@@ -14,14 +14,14 @@ Api for Rolling Scopes School task "RS CLONE".
 ## Usage
 
 - **Registration**
-  - [Registration new User](https://github.com//mclakov/rs-clone-serv#Registration)
+  - [Registration new User](https://github.com/mclakov/rs-clone-serv#Registration)
 
 - **Login**
-  - [Login User](https://github.com//mclakov/rs-clone-serv#sLogin)
+  - [Login User](https://github.com/mclakov/rs-clone-serv#sLogin)
 
 - **User**
-  - [Load User Data](https://github.com//mclakov/rs-clone-serv#Load-userdata)
-  - [Save User Data](https://github.com//mclakov/rs-clone-serv#Save-userdata)
+  - [Load User Data](https://github.com/mclakov/rs-clone-serv#Load)
+  - [Save User Data](https://github.com/mclakov/rs-clone-serv#Save)
 
 **Registration**
 ----
@@ -176,7 +176,7 @@ Login user.
 
 </details>
 
-**Load userdata**
+**Load**
 ----
 
 Load userdata from server.
@@ -386,7 +386,7 @@ Load userdata from server.
 
 </details>
 
-**Save userdata**
+**Save**
 ----
 
 Save userdata to server.
