@@ -43,7 +43,7 @@ class appController {
 
     async getUserData(req, res) {
         try {
-            const {id} = req.body;
+            const id = req.query.id;
             const user = await User.findById(id);
             if (!user) {
                 return res.status(400).json({message: `User's data not found!`});
