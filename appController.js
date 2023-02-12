@@ -1,4 +1,5 @@
 const User = require("./models/User");
+const Workspace = require("./models/Workspace");
 const {validationResult} = require("express-validator")
 
 class appController {
@@ -14,8 +15,10 @@ class appController {
                 return res.status(400).json({message: "Registration error! User already exists"});
             }
             const user = new User({username, password: password, workspaces: workspaces});
-            user.workspaces.forEach((workspace) => {
+            user.workspaces.forEach(async (workspace) => {
                 workspace.WORKSPACE_PS[0] = username;
+                const userWorkspace = new Workspace({id: workspace.WORKSPACE_ID,  title: workspace.WORKSPACE_TITLE, participants: workspace.WORKSPACE_PS, boards: workspace.WORKSPACE_BOARDS});
+                await userWorkspace.save();
             })
             await user.save();
             console.log("User registration completed!");
@@ -51,6 +54,20 @@ class appController {
             if (!user) {
                 return res.status(400).json({message: `User's data not found!`});
             }
+            const workspaceArr = await Workspace.find();
+            user.workspaces = workspaceArr
+                .filter((ws) => {
+                return ws.participants.includes(user.username)
+            })
+                .map((ws) => {
+                    return {
+                        WORKSPACE_ID: ws._id,
+                        WORKSPACE_TITLE: ws.title,
+                        WORKSPACE_PS: ws.participants,
+                        WORKSPACE_BOARDS: ws.boards,
+                    }
+                })
+            console.log("workspaceArr", user.workspaces);
             return res.json(user);
         } catch (e) {
             console.log(e);
