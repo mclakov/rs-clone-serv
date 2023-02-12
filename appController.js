@@ -14,6 +14,9 @@ class appController {
                 return res.status(400).json({message: "Registration error! User already exists"});
             }
             const user = new User({username, password: password, workspaces: workspaces});
+            user.workspaces.forEach((workspace) => {
+                workspace.WORKSPACE_PS[0] = username;
+            })
             await user.save();
             console.log("User registration completed!");
             return res.json({message: "User registration completed!"})
