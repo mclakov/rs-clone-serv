@@ -70,6 +70,21 @@ class appController {
             res.status(400).json({message: "Server error!"});
         }
     }
+
+    async delUser(req, res) {
+        try {
+            const {id} = req.body;
+            const user = await User.findById(id);
+            if (!user) {
+                return res.status(400).json({message: `User ${user} not found!`});
+            }
+            await user.deleteOne();
+            return res.json({message: "User delete!"})
+        } catch (e) {
+            console.log(e);
+            res.status(400).json({message: "Server error!"});
+        }
+    }
 }
 
 module.exports = new appController();
