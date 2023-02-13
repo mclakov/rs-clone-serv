@@ -10,6 +10,7 @@ router.post("/registration", [
 router.post("/login", controller.login);
 router.get("/userdata", controller.getUserData);
 router.put("/userdata", controller.setUserData);
+router.patch("/userdata", controller.addParticipants);
 router.delete("/userdata", controller.delUser);
 
 module.exports = router;
