@@ -15,10 +15,10 @@ class appController {
                 return res.status(400).json({message: "Registration error! User already exists"});
             }
             const user = new User({username, password: password, workspaces: workspaces});
-            user.workspaces.forEach(async (workspace) => {
+            user.workspaces.forEach((workspace) => {
                 workspace.WORKSPACE_PS[0] = username;
                 const userWorkspace = new Workspace({id: workspace.WORKSPACE_ID,  title: workspace.WORKSPACE_TITLE, participants: workspace.WORKSPACE_PS, boards: workspace.WORKSPACE_BOARDS});
-                await userWorkspace.save();
+                userWorkspace.save();
             })
             await user.save();
             console.log("User registration completed!");
@@ -67,8 +67,28 @@ class appController {
                         WORKSPACE_BOARDS: ws.boards,
                     }
                 })
-            console.log("workspaceArr", user.workspaces);
+            // console.log("workspaceArr", user.workspaces);
             return res.json(user);
+        } catch (e) {
+            console.log(e);
+            res.status(400).json({message: "Server error!"});
+        }
+    }
+
+    async addParticipants (req, res) {
+        try {
+            const {idWorkspace, nameParticipant} = req.body;
+            const workspace = await Workspace.findById(idWorkspace);
+            if (!workspace) {
+                return res.status(400).json({message: `Workspace not found!`});
+            }
+            if (workspace.participants.includes(nameParticipant)) {
+                return res.status(400).json({message: `Server error! User already exists`});
+            } else {
+                workspace.participants.push(nameParticipant);
+                workspace.save();
+            }
+            return res.json({message: "User's data update!"})
         } catch (e) {
             console.log(e);
             res.status(400).json({message: "Server error!"});
