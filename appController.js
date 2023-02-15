@@ -17,7 +17,12 @@ class appController {
             const user = new User({username, password: password, workspaces: workspaces});
             user.workspaces.forEach((workspace) => {
                 workspace.WORKSPACE_PS[0] = username;
-                const userWorkspace = new Workspace({id: workspace.WORKSPACE_ID,  title: workspace.WORKSPACE_TITLE, participants: workspace.WORKSPACE_PS, boards: workspace.WORKSPACE_BOARDS});
+                const userWorkspace = new Workspace({
+                    id: workspace.WORKSPACE_ID,
+                    title: workspace.WORKSPACE_TITLE,
+                    participants: workspace.WORKSPACE_PS,
+                    boards: workspace.WORKSPACE_BOARDS
+                });
                 userWorkspace.save();
             })
             await user.save();
@@ -58,8 +63,8 @@ class appController {
             const workspaceArr = await Workspace.find();
             user.workspaces = workspaceArr
                 .filter((ws) => {
-                return ws.participants.includes(user.username)
-            })
+                    return ws.participants.includes(user.username)
+                })
                 .map((ws) => {
                     return {
                         WORKSPACE_ID: ws.id,
@@ -68,28 +73,48 @@ class appController {
                         WORKSPACE_BOARDS: ws.boards,
                     }
                 })
-            // console.log("workspaceArr", user.workspaces);
-            return res.json(user);
+            return res.status(200).json(user);
         } catch (e) {
             console.log(e);
             res.status(400).json({message: "Server error!"});
         }
     }
 
-    async addParticipants (req, res) {
+    async setParticipants(req, res) {
         try {
-            const {idWorkspace, nameParticipant} = req.body;
-            const workspace = await Workspace.findById(idWorkspace);
+            const {idWorkspace, nameParticipant, act} = req.body;
+            const workspaces = await Workspace.find();
+            let workspace = null;
+            workspaces.forEach(ws => {
+                if (ws.id === idWorkspace) {
+                    workspace = ws;
+                }
+            });
+            console.log("workspace", workspace);
             if (!workspace) {
                 return res.status(400).json({message: `Workspace not found!`});
             }
-            if (workspace.participants.includes(nameParticipant)) {
-                return res.status(400).json({message: `Server error! User already exists`});
-            } else {
-                workspace.participants.push(nameParticipant);
-                workspace.save();
+            if (act === "add") {
+                if (workspace.participants.includes(nameParticipant)) {
+                    return res.status(400).json({message: `Server error! User already exists`});
+                } else {
+                    const newWorkspace = await Workspace.findById(workspace._id);
+                    newWorkspace.participants.push(nameParticipant);
+                    newWorkspace.save();
+                    return res.status(200).json({message: "User's data update!"});
+                }
             }
-            return res.json({message: "User's data update!"})
+            if (act === "del") {
+                if (!workspace.participants.includes(nameParticipant)) {
+                    return res.status(400).json({message: `Server error! User not found`});
+                } else {
+                    const newWorkspace = await Workspace.findById(workspace._id);
+                    const index = workspace.participants.findIndex(part => part === nameParticipant);
+                    newWorkspace.participants.splice(index, 1);
+                    newWorkspace.save();
+                    return res.status(200).json({message: "User's data update!"});
+                }
+            }
         } catch (e) {
             console.log(e);
             res.status(400).json({message: "Server error!"});
@@ -104,8 +129,21 @@ class appController {
                 return res.status(400).json({message: `User ${user} not found!`});
             }
             user.workspaces = newUserData;
+            const workspaces = await Workspace.find();
+            workspaces.forEach(ws => {
+                user.workspaces.forEach(async w => {
+                    if (w.WORKSPACE_ID === ws.id) {
+                        let newWorkspace = await Workspace.findById(ws._id);
+                        newWorkspace.id = w.WORKSPACE_ID;
+                        newWorkspace.title = w.WORKSPACE_TITLE;
+                        newWorkspace.participants = w.WORKSPACE_PS;
+                        newWorkspace.boards = w.WORKSPACE_BOARDS;
+                        newWorkspace.save();
+                    }
+                });
+            });
             await user.save();
-            return res.json({message: "User's data update!"})
+            return res.status(200).json({message: "User's data update!"})
         } catch (e) {
             console.log(e);
             res.status(400).json({message: "Server error!"});
@@ -120,7 +158,7 @@ class appController {
                 return res.status(400).json({message: `User ${user} not found!`});
             }
             await user.deleteOne();
-            return res.json({message: "User delete!"})
+            return res.status(200).json({message: "User delete!"})
         } catch (e) {
             console.log(e);
             res.status(400).json({message: "Server error!"});
