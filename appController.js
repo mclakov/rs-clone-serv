@@ -40,6 +40,7 @@ class appController {
             if (!validPassword) {
                 return res.status(400).json({message: `Password incorrect!`});
             }
+            console.log("user.id = ", user.id);
             return res.json(user.id);
         } catch (e) {
             console.log(e);
@@ -61,7 +62,7 @@ class appController {
             })
                 .map((ws) => {
                     return {
-                        WORKSPACE_ID: ws._id,
+                        WORKSPACE_ID: ws.id,
                         WORKSPACE_TITLE: ws.title,
                         WORKSPACE_PS: ws.participants,
                         WORKSPACE_BOARDS: ws.boards,
