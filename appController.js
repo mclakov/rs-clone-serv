@@ -9,19 +9,20 @@ class appController {
             if (!errors.isEmpty()) {
                 return res.status(400).json({message: "User validation error!", errors});
             }
-            const {username, password, workspaces} = req.body;
+            const {username, password, workspaces, settings} = req.body;
             const candidate = await User.findOne({username});
             if (candidate) {
                 return res.status(400).json({message: "Registration error! User already exists"});
             }
-            const user = new User({username, password: password, workspaces: workspaces});
+            const user = new User({username, password: password, workspaces: workspaces, settings: settings});
             user.workspaces.forEach((workspace) => {
                 workspace.WORKSPACE_PS[0] = username;
                 const userWorkspace = new Workspace({
                     id: workspace.WORKSPACE_ID,
                     title: workspace.WORKSPACE_TITLE,
                     participants: workspace.WORKSPACE_PS,
-                    boards: workspace.WORKSPACE_BOARDS
+                    boards: workspace.WORKSPACE_BOARDS,
+                    settings: workspace.WORKSPACE_SETTINGS
                 });
                 userWorkspace.save();
             })
@@ -71,8 +72,18 @@ class appController {
                         WORKSPACE_TITLE: ws.title,
                         WORKSPACE_PS: ws.participants,
                         WORKSPACE_BOARDS: ws.boards,
+                        WORKSPACE_SETTINGS: ws.settings
                     }
                 })
+            const userParticipants = await User.find();
+            user.settings.USER_PARTICIPANTS = userParticipants
+                .map(userObj => {
+                    return {
+                        PARTICIPANT_NAME: userObj.username,
+                        PARTICIPANT_LOGO: userObj.settings.USER_LOGO
+                    }
+                })
+                .filter(userObj => userObj.PARTICIPANT_NAME !== user.username);
             return res.status(200).json(user);
         } catch (e) {
             console.log(e);
