@@ -134,12 +134,13 @@ class appController {
 
     async setUserData(req, res) {
         try {
-            const {id, newUserData} = req.body;
+            const {id, newUserData, newUserSett} = req.body;
             const user = await User.findById(id);
             if (!user) {
                 return res.status(400).json({message: `User ${user} not found!`});
             }
             user.workspaces = newUserData;
+            user.settings = newUserSett;
             const workspaces = await Workspace.find();
             workspaces.forEach(ws => {
                 user.workspaces.forEach(async w => {
